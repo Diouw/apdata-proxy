@@ -20,21 +20,30 @@ app.use(express.json());
 // ✅ Endpoint principal
 app.post('/proxy/apdata', async (req, res) => {
   try {
-    const { userName, pass, queryId, languageId, items } = req.body;
+    const { username, pass, queryId, value, paramName, endpoint } = req.body;
 
-    if (!userName || !pass || !queryId || !items) {
+    if (!username || !pass || !queryId || !value || !paramName || !endpoint) {
       return res.status(400).json({ error: 'Parâmetros obrigatórios ausentes' });
     }
 
+    // Monta o payload final da APDATA
     const payload = {
-      userName,
-      pass,
-      queryId,
-      languageId: languageId || 0,
-      items
+      userName: username,
+      pass: pass,
+      queryId: queryId,
+      languageId: 0,
+      items: [
+        {
+          value: value,
+          paramName: paramName
+        }
+      ]
     };
 
-    const response = await fetch('https://api-hml.apdata.com.br:22238/REST/API.APDATA.V1/QUERYS', {
+    console.log(`Enviando payload para: ${endpoint}`);
+    console.log(JSON.stringify(payload, null, 2));
+
+    const response = await fetch(endpoint, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload)
