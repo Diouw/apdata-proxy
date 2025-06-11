@@ -6,13 +6,19 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // ✅ Configura CORS para permitir chamadas do seu widget Zoho Creator
-app.use(cors({
+const corsOptions = {
   origin: "https://85d28128-b7d3-4dd7-9da0-ac78ac235719.zappsusercontent.com",
   methods: ["GET", "POST", "OPTIONS"],
   allowedHeaders: ["Content-Type"]
-}));
+};
 
+app.use(cors(corsOptions));
+
+// ✅ Middleware para parsear JSON
 app.use(express.json());
+
+// ✅ Middleware adicional para garantir preflight OPTIONS para todas as rotas
+app.options('*', cors(corsOptions));
 
 // ✅ Endpoint principal
 app.post('/proxy/apdata', async (req, res) => {
